@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nodejs File Uploader</title>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Autour+One&display=swap');
+
+        body {
+            font-family: 'Autour One', sans-serif;
+            font-size: 1.5rem;
+            background-color: #f6f3f3;
+        }
+
+        .container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            position: absolute;
+            transform: translate(-50%, -50%);
+            top: 50%;
+            left: 50%;
+            width: 100%;
+            max-width: 50rem;
+            border: 1.2px solid brown;
+            border-radius: 50px 10px 50px 10px;
+            background-image: linear-gradient(to right bottom, #f6f3f3, #f6f3f3, brown 160%);
+            
+        }
+
+        :is(input, button) {
+            width: max-content;
+            font: inherit;
+            padding-inline: 10px;
+            padding-block: 10px;
+            cursor: pointer;
+        }
+
+        :where(h2, h3) {
+            font-size: 1rem;
+        }
+
+        form {
+            display: flex;
+            flex-flow: column nowrap;
+            gap: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Node.js File Uploader</h1>
+    
+        <form id="uploadForm" enctype="multipart/form-data">
+            <input type="file" id="myFiles" accept="image/*" multiple />
+            <button>Upload</button>
+        </form>
+    
+        <h2></h2>
+        <h3></h3>
+    </div>
+<script>
+    const uploadForm = document.getElementById('uploadForm')
+
+    const sendFile = async () => {
+        const myFiles = document.getElementById('myFiles').files
+
+        const formData = new FormData;
+        Object.keys(myFiles).forEach(key => {
+            formData.append(myFiles.item(key).name, myFiles.item(key))
+        })
+
+        const response = await fetch('http://localhost:3500/upload', {
+            method: "POST",
+            body: formData
+        })
+        const json = await response.json()
+
+        const h2 = document.querySelector('h2')
+        h2.textContent = `Status: ${json?.status}`
+    
+        const h3 = document.querySelector('h3')
+        h3.textContent = json?.message
+    }
+
+    uploadForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            sendFile()
+    })
+</script>
+</body>
+</html>
